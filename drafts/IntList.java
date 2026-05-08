@@ -6,39 +6,45 @@
 
 public class IntList {
     
-    public int[] list;
+    private int[] list;
 
     public static void main(String[] args){
-        System.out.println("Hello, Wolrd!");
-
-        int[] tmp1 = {4, 2, 1, 3};
-        int[] tmp2 = {7, 5, 6};
-        IntList lista1 = new IntList(tmp1);
-        IntList lista2 = new IntList(tmp2);
-        // System.out.println( lista1.contains(2) );
-        // System.out.println( lista1.equals(lista2) );
-        IntList lista3 = lista1.append(lista2);
-        // lista3.print();
-
-        IntList lista4 = lista3.reverse();
-        // lista4.print();
-        
-        // lista4.reverseMe();
-        // lista4.print();
-
-        lista4.print();
-        IntList lista5 = lista4.sort();
-        lista5.print();
+        run_tests();
     }
     
-    public IntList(int[] list){
-        this.list = list;
+    public IntList(){ 
+        this.list = null; 
+    }
+
+    public IntList(int[] list){ 
+        this.list = list;  
     }
 
     public void print(){
-        for(int i=0; i<this.list.length; i++)
-            System.out.print( this.list[i] + " " );
-        System.out.println();
+        System.out.println(this.toStr());
+    }
+
+    public String toStr(){
+        if(this.list == null) return "[]";
+        String result = "[" + this.list[0];
+        for(int i=1; i<this.list.length; i++)
+            result += ", " + this.list[i]; 
+    
+        result += "]";
+        return result;
+    }
+
+    public void add(int n){
+        if(this.list == null){
+            this.list = new int[]{n};
+            return;
+        }
+    
+        int[] new_list = new int[this.list.length+1];  
+        for(int i=0; i < this.list.length; i++)
+            new_list[i] = this.list[i];
+        new_list[new_list.length - 1] = n;
+        this.list = new_list;
     }
     
     // Exercício 01: Adicione um method de instância contains à classe IntList,
@@ -101,9 +107,9 @@ public class IntList {
     // que x.reverse() retorne uma IntList que é o reverso da IntList x. Não
     // deve haver efeito colateral em x.
     public IntList reverse(){
+        if(this.list == null || this.list.length < 1) return this;
+        
         IntList result = new IntList(new int[this.list.length]);
-
-        if(this.list == null) return result;
 
         for(int i=0; i<this.list.length; i++)
             result.list[this.list.length - 1 - i] = this.list[i];
@@ -132,7 +138,11 @@ public class IntList {
         if(this.list == null || this.list.length == 1) 
             return new IntList(new int[0]);
         
-        IntList sorted = new IntList(this.list);
+        IntList sorted = new IntList(new int[this.list.length]);
+
+        for(int i=0; i<this.list.length; i++){
+            sorted.list[i] = this.list[i];
+        }
 
         int size = sorted.list.length;
         
@@ -149,5 +159,151 @@ public class IntList {
         }         
 
         return sorted;
+    }
+
+    private static void run_tests(){
+        // =========================
+        // CRIAÇÃO DAS LISTAS
+        // =========================
+        IntList lista1 = new IntList();
+        lista1.add(1);
+        lista1.add(2);
+        lista1.add(3);
+        
+        IntList lista2 = new IntList();
+        lista2.add(1);
+        lista2.add(2);
+        lista2.add(3);
+        
+        IntList lista3 = new IntList();
+        lista3.add(3);
+        lista3.add(2);
+        lista3.add(1);
+        
+        IntList lista4 = new IntList();
+        lista4.add(4);
+        lista4.add(5);
+        
+        assert lista1.toStr().equals("[1, 2, 3]")
+            : "add nao esta funcionando";
+
+        assert lista2.toStr().equals("[1, 2, 3]")
+            : "add nao esta funcionando";
+
+        assert lista3.toStr().equals("[3, 2, 1]")
+            : "add nao esta funcionando";
+
+        assert lista4.toStr().equals("[4, 5]")
+            : "add nao esta funcionando";
+
+        IntList listaVazia = new IntList();
+
+        // =========================
+        // TESTES DO CONTAINS
+        // =========================
+        assert lista1.contains(1)
+                : "contains falhou para elemento existente";
+        assert lista1.contains(3)
+                : "contains falhou para último elemento";
+        assert !lista1.contains(10)
+                : "contains falhou para elemento inexistente";
+        assert !listaVazia.contains(1)
+                : "contains falhou para lista vazia";
+
+        // =========================
+        // TESTES DO EQUALS
+        // =========================
+        assert lista1.equals(lista2)
+                : "equals falhou para listas iguais";
+        assert lista2.equals(lista1)
+                : "equals não é simétrico";
+        assert !lista1.equals(lista3)
+                : "equals falhou para listas diferentes";
+        assert lista1.equals(lista1)
+                : "equals falhou para mesma referência";
+        assert listaVazia.equals(new IntList())
+                : "equals falhou para listas vazias";
+
+        // =========================
+        // TESTES DO APPEND
+        // =========================
+        IntList append = lista1.append(lista4);
+        assert append.toStr().equals("[1, 2, 3, 4, 5]")
+                : "append falhou";
+        // verifica ausência de efeito colateral
+        assert lista1.toStr().equals("[1, 2, 3]")
+                : "append alterou lista1";
+        assert lista4.toStr().equals("[4, 5]")
+                : "append alterou lista4";
+
+
+        // append com lista vazia
+        IntList appendVazio = lista1.append(listaVazia);
+        assert appendVazio.toStr().equals("[1, 2, 3]")
+                : "append com lista vazia falhou";
+
+        // =========================
+        // TESTES DO REVERSE
+        // =========================
+        IntList reversa = lista1.reverse();
+        assert reversa.toStr().equals("[3, 2, 1]")
+                : "reverse falhou";
+        // sem efeito colateral
+        assert lista1.toStr().equals("[1, 2, 3]")
+                : "reverse alterou lista original";
+        // reverse de lista vazia
+        assert listaVazia.reverse().toStr().equals("[]")
+                : "reverse falhou para lista vazia";
+
+        // =========================
+        // TESTES DO REVERSEME
+        // =========================
+        lista1.reverseMe();
+        assert lista1.toStr().equals("[3, 2, 1]")
+                : "reverseMe falhou";
+        // reversão novamente
+        lista1.reverseMe();
+        assert lista1.toStr().equals("[1, 2, 3]")
+                : "reverseMe falhou na segunda reversão";
+
+        // =========================
+        // TESTES DO SORT
+        // =========================
+        IntList desordenada = new IntList();
+        desordenada.add(5);
+        desordenada.add(1);
+        desordenada.add(4);
+        desordenada.add(2);
+        desordenada.add(3);
+
+        IntList ordenada = desordenada.sort();
+        assert ordenada.toStr().equals("[1, 2, 3, 4, 5]")
+                : "sort falhou";
+        // sem efeito colateral
+        assert desordenada.toStr().equals("[5, 1, 4, 2, 3]")
+                : "sort alterou lista original";
+        // sort já ordenada
+        assert lista1.sort().toStr().equals("[1, 2, 3]")
+                : "sort falhou para lista já ordenada";
+        // sort com repetidos
+        IntList repetidos = new IntList();
+        repetidos.add(3);
+        repetidos.add(1);
+        repetidos.add(3);
+        repetidos.add(2);
+        assert repetidos.sort().toStr().equals("[1, 2, 3, 3]")
+                : "sort falhou com repetidos";
+
+        // =========================
+        // TESTES ENCADEADOS
+        // =========================
+        IntList resultado = lista1
+                .append(lista4)
+                .reverse()
+                .sort();
+        assert resultado.toStr().equals("[1, 2, 3, 4, 5]")
+                : "Operações encadeadas falharam";
+
+        System.out.println("Todos os testes passaram!");
     }
 }
