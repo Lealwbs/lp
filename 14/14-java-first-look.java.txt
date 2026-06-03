@@ -1,0 +1,220 @@
+class IntList {
+    private Node head;
+
+    private static class Node {
+        int value;
+        Node next;
+
+        Node(int value) {
+            this.value = value;
+            this.next = null;
+        }
+    }
+
+    public IntList() {
+        this.head = null;
+    }
+
+    public void add(int value) {
+        if (head == null) {
+            head = new Node(value);
+        } else {
+            Node current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = new Node(value);
+        }
+    }
+
+    // Exercicio 01
+    public boolean contains(int n) {
+        Node current = head;
+        while (current != null) {
+            if (current.value == n) {
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+
+    // Exercicio 02
+    public boolean equals(IntList other) {
+        Node current1 = this.head;
+        Node current2 = other.head;
+        while (current1 != null && current2 != null) {
+            if (current1.value != current2.value) {
+                return false;
+            }
+            current1 = current1.next;
+            current2 = current2.next;
+        }
+        return current1 == null && current2 == null;
+    }
+
+    // Exercicio 03
+    public IntList append(IntList other) {
+        IntList result = new IntList();
+        Node current = this.head;
+        while (current != null) {
+            result.add(current.value);
+            current = current.next;
+        }
+        current = other.head;
+        while (current != null) {
+            result.add(current.value);
+            current = current.next;
+        }
+        return result;
+    }
+
+    // Exercicio 04
+    public IntList reverse() {
+        IntList result = new IntList();
+        Node current = this.head;
+        while (current != null) {
+            Node newNode = new Node(current.value);
+            newNode.next = result.head;
+            result.head = newNode;
+            current = current.next;
+        }
+        return result;
+    }
+
+    // Exercicio 05
+    public void reverseMe() {
+        Node previous = null;
+        Node current = head;
+        while (current != null) {
+            Node next = current.next;
+            current.next = previous;
+            previous = current;
+            current = next;
+        }
+        head = previous;
+    }
+
+    // Exercicio 06
+    public IntList sort() {
+        IntList result = new IntList();
+        Node current = this.head;
+        while (current != null) {
+            result.insertSorted(current.value);
+            current = current.next;
+        }
+        return result;
+    }
+
+    private void insertSorted(int value) {
+        Node newNode = new Node(value);
+        if (head == null || head.value >= value) {
+            newNode.next = head;
+            head = newNode;
+        } else {
+            Node current = head;
+            while (current.next != null && current.next.value < value) {
+                current = current.next;
+            }
+            newNode.next = current.next;
+            current.next = newNode;
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        Node current = head;
+        while (current != null) {
+            sb.append(current.value).append(" -> ");
+            current = current.next;
+        }
+        sb.append("null");
+        return sb.toString();
+    }
+}
+
+class Int {
+    private int value;
+
+    public Int(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
+
+    public Int plus(Int other) {
+        return new Int(this.value + other.value);
+    }
+
+    public Int minus(Int other) {
+        return new Int(this.value - other.value);
+    }
+
+    public Int times(Int other) {
+        return new Int(this.value * other.value);
+    }
+
+    public Int div(Int other) {
+        if (other.value == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
+        return new Int(this.value / other.value);
+    }
+
+    public boolean isPrime() {
+        if (value < 2) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(value); i++) {
+            if (value % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Test IntList methods
+        IntList list1 = new IntList();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+
+        System.out.println("Contains 2: " + list1.contains(2)); // true
+        System.out.println("Contains 5: " + list1.contains(5)); // false
+
+        IntList list2 = new IntList();
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+
+        System.out.println("Lists equal: " + list1.equals(list2)); // true
+
+        IntList appended = list1.append(list2);
+        System.out.println("Appended list: " + appended);
+
+        System.out.println("Reversed list: " + list1.reverse());
+
+        list1.reverseMe();
+        System.out.println("Reversed in place: " + list1);
+
+        IntList sorted = list1.sort();
+        System.out.println("Sorted list: " + sorted);
+
+        // Test Int methods
+        Int a = new Int(7);
+        Int b = new Int(3);
+
+        System.out.println("a + b: " + a.plus(b));
+        System.out.println("a - b: " + a.minus(b));
+        System.out.println("a * b: " + a.times(b));
+        System.out.println("a / b: " + a.div(b));
+        System.out.println("Is a prime: " + a.isPrime());
+    }
+}
